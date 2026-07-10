@@ -2,8 +2,8 @@ name: Telegram Reminder
 
 on:
   schedule:
-    # كل 30 دقيقة - لازم يتطابق مع INTERVAL_MINUTES في send_reminder.py
-    - cron: '*/1 * * * *'
+
+    - cron: '*/5 * * * *'
   workflow_dispatch: {}
 
 jobs:
