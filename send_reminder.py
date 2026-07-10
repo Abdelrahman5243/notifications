@@ -5,7 +5,7 @@ import urllib.request
 import urllib.parse
 
 # ---- الإعدادات ----
-INTERVAL_MINUTES = 30          # كل قد إيه يتبعت تذكير (لازم يتطابق مع الجدولة في workflow file)
+INTERVAL_MINUTES = 15          # كل قد إيه يتبعت تذكير (لازم يتطابق مع الجدولة في workflow file)
 START_EPOCH = 1750000000       # نقطة بداية ثابتة (متتغيرش) عشان الحساب يكون متسق
 
 def load_list(path="list.txt"):
