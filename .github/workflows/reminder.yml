@@ -1,62 +1,25 @@
 name: Telegram Reminder
 
 on:
-  workflow_dispatch:
+  schedule:
+    # كل 30 دقيقة - لازم يتطابق مع INTERVAL_MINUTES في send_reminder.py
+    - cron: '*/1 * * * *'
+  workflow_dispatch: {}
 
 jobs:
   send-reminder:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-
     steps:
-      - name: Checkout repository
+      - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Send Telegram message
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Send reminder
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-        shell: bash
-        run: |
-          set -euo pipefail
-
-          if [[ -z "${TELEGRAM_BOT_TOKEN:-}" ]]; then
-            echo "Missing TELEGRAM_BOT_TOKEN secret" >&2
-            exit 1
-          fi
-
-          if [[ -z "${TELEGRAM_CHAT_ID:-}" ]]; then
-            echo "Missing TELEGRAM_CHAT_ID secret" >&2
-            exit 1
-          fi
-
-          if [[ ! -f list.txt ]]; then
-            echo "list.txt is missing" >&2
-            exit 1
-          fi
-
-          message=$'Reminder:\n'
-          count=0
-
-          while IFS= read -r line || [[ -n "$line" ]]; do
-            trimmed="${line#"${line%%[![:space:]]*}"}"
-            trimmed="${trimmed%"${trimmed##*[![:space:]]}"}"
-
-            if [[ -z "$trimmed" || "$trimmed" == \#* ]]; then
-              continue
-            fi
-
-            message+="- ${trimmed}"$'\n'
-            count=$((count + 1))
-          done < list.txt
-
-          if [[ "$count" -eq 0 ]]; then
-            message+="No items found in list.txt"$'\n'
-          fi
-
-          curl --fail --silent --show-error \
-            -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
-            --data-urlencode "chat_id=${TELEGRAM_CHAT_ID}" \
-            --data-urlencode "text=${message}" \
-            --data-urlencode "disable_web_page_preview=true"
+        run: python send_reminder.py
