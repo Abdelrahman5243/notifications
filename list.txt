@@ -1,0 +1,4 @@
+# Put one reminder item per line.
+# Empty lines and comment lines are ignored by the workflow.
+Example reminder one
+Example reminder two
