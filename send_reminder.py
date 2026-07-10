@@ -10,7 +10,10 @@ START_EPOCH = 1750000000       # نقطة بداية ثابتة (متتغيرش)
 
 def load_list(path="list.txt"):
     with open(path, "r", encoding="utf-8") as f:
-        items = [line.strip() for line in f if line.strip()]
+        items = [
+            line.strip() for line in f
+            if line.strip() and not line.strip().startswith("#")
+        ]
     return items
 
 
